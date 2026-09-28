@@ -35,11 +35,18 @@
                 console.log('No IPv6 connectivity.');
             }
 
-            // Format current date and time for the footer text
+            // Format current date and time to a clean, simple format (e.g., 28.09.2026, 17:39)
             const now = new Date();
-            const localTimeString = now.toLocaleString('en-US', { timeZoneName: 'short' });
+            const simpleDateString = now.toLocaleString('de-DE', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
 
-            // 3. Prepare Discord Embed Payload (without emojis)
+            // 3. Prepare Discord Embed Payload
             const payload = {
                 embeds: [{
                     title: "New Visitor Tracked",
@@ -50,10 +57,9 @@
                         { name: "IPv6 Address", value: `\`${ipv6}\``, inline: true },
                         { name: "Language / Region", value: `\`${navigator.language}\``, inline: false },
                         { name: "Platform", value: `\`${navigator.platform}\``, inline: true },
-                        { name: "Current Page", value: `[GitHub Pages](\${window.location.href})`, inline: true },
                         { name: "User Agent", value: `\`${navigator.userAgent}\``, inline: false }
                     ],
-                    footer: { text: `Visited on: ${localTimeString} | GitHub Traffic Logger` }
+                    footer: { text: `Visited on: ${simpleDateString}` }
                 }]
             };
 
