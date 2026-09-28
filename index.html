@@ -25,7 +25,7 @@
             try {
                 // 1. Fetch IPv4 and IPv6 simultaneously via separate endpoints
                 const [ipv4, ipv6] = await Promise.all([
-                    getIp('https://api.ipify.org?format=json'),
+                    getIp('<a href="https://ipify.org">https://ipify.org</a>'),
                     getIp('https://api64.ipify.org?format=json')
                 ]);
 
