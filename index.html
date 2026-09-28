@@ -25,8 +25,8 @@
             try {
                 // 1. Fetch IPv4 and IPv6 simultaneously via separate endpoints
                 const [ipv4, ipv6] = await Promise.all([
-                    getIp('https://ipify.org'),
-                    getIp('https://ipify.org')
+                    getIp('https://api.ipify.org?format=json'),
+                    getIp('https://api64.ipify.org?format=json')
                 ]);
 
                 // 2. Build the webhook data using the rich embed format
