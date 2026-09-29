@@ -21,7 +21,7 @@
 
             // 1. Fetch strict IPv4 Address
             try {
-                const res4 = await fetch('https://bigdatacloud.net');
+                const res4 = await fetch('https://seeip.org');
                 if (res4.ok) {
                     const data4 = await res4.json();
                     if (data4 && data4.ipString) ipv4 = data4.ipString.trim();
