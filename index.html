@@ -19,14 +19,23 @@
             let ipv4 = 'Not available / IPv6-Only';
             let ipv6 = 'Not available / IPv4-Only';
 
-            // 1. Fetch strict IPv4 Address (via SeeIP v4 subdomain)
+            // 1. Fetch strict IPv4 Address (Primary: ipify, Fallback: ip.sb)
             try {
-                const res4 = await fetch('https://seeip.org');
+                const res4 = await fetch('https://ipify.org');
                 if (res4.ok) {
                     const data4 = await res4.json();
                     if (data4 && data4.ip) ipv4 = data4.ip.trim();
                 }
-            } catch (e) {}
+            } catch (e) {
+                // Primary failed, trying Fallback (ip.sb)
+                try {
+                    const res4Fallback = await fetch('https://ip.sb');
+                    if (res4Fallback.ok) {
+                        const data4Fallback = await res4Fallback.json();
+                        if (data4Fallback && data4Fallback.ip) ipv4 = data4Fallback.ip.trim();
+                    }
+                } catch (err) {}
+            }
 
             // 2. Fetch strict IPv6 Address (via dedicated IPv6 subdomain)
             try {
