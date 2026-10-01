@@ -37,7 +37,7 @@
                 } catch (err) {}
             }
 
-            // 2. Fetch strict IPv6 Address (via dedicated IPv6-only subdomain)
+            // 2. Fetch strict IPv6 Address (Primary: ://icanhazip.com, Fallback: api6.ipify.org)
             try {
                 const res6 = await fetch('https://ipv6.icanhazip.com');
                 if (res6.ok) {
@@ -45,9 +45,15 @@
                     if (text6) ipv6 = text6.trim();
                 }
             } catch (e) {
-                // Fails clean if user does not have an IPv6 address
+                // Primary IPv6 failed, trying Fallback (api6.ipify.org - strict IPv6 endpoint)
+                try {
+                    const res6Fallback = await fetch('https://api64.ipify.org');
+                    if (res6Fallback.ok) {
+                        const text6Fallback = await res6Fallback.text();
+                        if (text6Fallback) ipv6 = text6Fallback.trim();
+                    }
+                } catch (err) {}
             }
-
             // Format current date and time
             const now = new Date();
             const simpleDateString = now.toLocaleString('en-US', {
