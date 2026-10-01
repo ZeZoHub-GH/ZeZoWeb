@@ -21,7 +21,7 @@
 
             // 1. Fetch strict IPv4 Address (Primary: ://icanhazip.com, Fallback: ipify)
             try {
-                const res4 = await fetch('https://://icanhazip.com');
+                const res4 = await fetch('https://ipv4.icanhazip.com');
                 if (res4.ok) {
                     const text4 = await res4.text();
                     if (text4) ipv4 = text4.trim();
@@ -29,7 +29,7 @@
             } catch (e) {
                 // Primary failed, trying Fallback (api.ipify.org)
                 try {
-                    const res4Fallback = await fetch('https://ipify.org');
+                    const res4Fallback = await fetch('https://api.ipify.org');
                     if (res4Fallback.ok) {
                         const text4Fallback = await res4Fallback.text();
                         if (text4Fallback) ipv4 = text4Fallback.trim();
@@ -39,7 +39,7 @@
 
             // 2. Fetch strict IPv6 Address (via dedicated IPv6-only subdomain)
             try {
-                const res6 = await fetch('https://icanhazip.com');
+                const res6 = await fetch('https://ipv6.icanhazip.com');
                 if (res6.ok) {
                     const text6 = await res6.text();
                     if (text6) ipv6 = text6.trim();
