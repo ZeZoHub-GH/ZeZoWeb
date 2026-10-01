@@ -54,7 +54,7 @@
             } catch (e) {
                 try {
                     // Using strict IPv6 subdomain to avoid accidental IPv4 returns
-                    const res6Fallback = await fetchWithTimeout('https://api64.ipify.org');
+                    const res6Fallback = await fetchWithTimeout('https://api6.ipify.org');
                     if (res6Fallback.ok) {
                         const text6Fallback = await res6Fallback.text();
                         if (text6Fallback) ipv6 = text6Fallback.trim();
