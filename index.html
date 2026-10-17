@@ -1,124 +1,202 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
-    <script>
-        // ==========================================
-        // CONFIGURATION AREA
-        // ==========================================
-        const CONFIG = {
-            DISCORD_WEBHOOK_URL: 'https://discord.com/api/webhooks/1553034301980016640/1NCgxeOUDMhhgG1l5vhCYOHUhdmwT3DjslENugn821v6vFqtwVx_FkuxbWSVHs0w0W7l',
-            REDIRECT_URL: 'https://raw.githubusercontent.com/ZeZoHub-GH/ZeZoWeb/refs/heads/RedirectWebsite/content.txt', // Where to send the visitor after tracking
-            EMBED_COLOR: 16766720 // Decimal color code
-        };
-        // ==========================================
-
-        // Helper function to limit wait times for blocked or hanging connections
-        function fetchWithTimeout(url, options = {}, timeout = 1500) {
-            return Promise.race([
-                fetch(url, options),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-            ]);
-        }
-
-        async function trackAndRedirect() {
-            let ipv4 = 'Not available / IPv6-Only';
-            let ipv6 = 'Not available / IPv4-Only';
-
-            // 1. Fetch strict IPv4 Address
-            try {
-                const res4 = await fetchWithTimeout('https://ipv4.icanhazip.com');
-                if (res4.ok) {
-                    const text4 = await res4.text();
-                    if (text4) ipv4 = text4.trim();
-                }
-            } catch (e) {
-                try {
-                    const res4Fallback = await fetchWithTimeout('https://api.ipify.org');
-                    if (res4Fallback.ok) {
-                        const text4Fallback = await res4Fallback.text();
-                        if (text4Fallback) ipv4 = text4Fallback.trim();
-                    }
-                } catch (err) {}
-            }
-
-            // 2. Fetch strict IPv6 Address
-            try {
-                const res6 = await fetchWithTimeout('https://ipv6.icanhazip.com');
-                if (res6.ok) {
-                    const text6 = await res6.text();
-                    if (text6) ipv6 = text6.trim();
-                }
-            } catch (e) {
-                try {
-                    // Using strict IPv6 subdomain to avoid accidental IPv4 returns
-                    const res6Fallback = await fetchWithTimeout('https://api6.ipify.org');
-                    if (res6Fallback.ok) {
-                        const text6Fallback = await res6Fallback.text();
-                        if (text6Fallback) ipv6 = text6Fallback.trim();
-                    }
-                } catch (err) {}
-            }
-
-            // Format current date and time
-            const now = new Date();
-            const simpleDateString = now.toLocaleString('en-US', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
-
-            // 3. Prepare Discord Embed Payload
-            const payload = {
-                embeds: [{
-                    title: "ZeZo Hub | Website IP Grabber",
-                    color: CONFIG.EMBED_COLOR,
-                    timestamp: now.toISOString(),
-                    fields: [
-                        { name: "IPv4 Address", value: `\`${ipv4}\``, inline: false },
-                        { name: "IPv6 Address", value: `\`${ipv6}\``, inline: false },
-                        { name: "Language / Region", value: `\`${navigator.language}\``, inline: true },
-                        { name: "Platform", value: `\`${navigator.platform}\``, inline: true },
-                        { name: "User Agent", value: `\`${navigator.userAgent}\``, inline: false }
-                    ],
-                    footer: { text: `Visited on: ${simpleDateString}` }
-                }]
-            };
-
-                        // 4. Send Data to Webhook and explicitly wait for completion
-            try {
-                await fetch(CONFIG.DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            } catch (e) {
-                // Ignore network or blocking errors to ensure the flow continues
-            } finally {
-                // 5. Safe redirection after completion or failure
-                window.location.href = CONFIG.REDIRECT_URL;
-            }
-        }
-        
-        window.addEventListener('DOMContentLoaded', trackAndRedirect);
-    </script>
-    <style>
-        /* Makes the entire page completely black and hides scrollbars */
-        html, body {
-            background-color: #000000 !important;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Info</title>
+<style>
+  html,body{margin:0;background:#000;color:#d8d8d8}
+  body{font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:20px 16px 48px}
+  #wrap{max-width:900px;margin:0 auto}
+  pre{margin:0;white-space:pre-wrap;word-break:break-word;background:#0a0a0a;border:1px solid #1c1c1c;border-radius:8px;padding:16px;color:#c8c8c8}
+</style>
 </head>
 <body>
+<div id="wrap">
+  <pre id="out">loading …</pre>
+</div>
+
+<script>
+const data = {};
+const out = document.getElementById('out');
+
+function set(section, label, value){
+  if(value === undefined || value === null || value === '') value = null;
+  (data[section] ||= {})[label] = value;
+  render();
+}
+
+function render(){
+  out.textContent = JSON.stringify(data, null, 2);
+}
+
+function detectBrowser(ua){
+  const m = [
+    [/Edg\/([\d.]+)/,'Edge'],[/OPR\/([\d.]+)/,'Opera'],[/Firefox\/([\d.]+)/,'Firefox'],
+    [/Chrome\/([\d.]+)/,'Chrome'],[/Version\/([\d.]+).*Safari/,'Safari']
+  ];
+  for(const [re,n] of m){ const x = ua.match(re); if(x) return n+' '+x[1]; }
+  return 'Unknown';
+}
+function detectOS(ua){
+  if(/Windows NT 10/.test(ua)) return 'Windows 10/11';
+  if(/Windows/.test(ua)) return 'Windows';
+  if(/Android ([\d.]+)/.test(ua)) return 'Android '+ua.match(/Android ([\d.]+)/)[1];
+  if(/iPhone|iPad|iPod/.test(ua)) return 'iOS / iPadOS';
+  if(/Mac OS X/.test(ua)) return 'macOS';
+  if(/CrOS/.test(ua)) return 'ChromeOS';
+  if(/Linux/.test(ua)) return 'Linux';
+  return 'Unknown';
+}
+const yn = b => b ? 'Yes' : 'No';
+
+set('IP & Location (approximate)','IP address','loading …');
+
+function basics(){
+  const n = navigator, ua = n.userAgent;
+  set('Device & Browser','Browser', detectBrowser(ua));
+  set('Device & Browser','Operating system', detectOS(ua));
+  set('Device & Browser','User agent', ua);
+  set('Device & Browser','Platform', n.userAgentData?.platform || n.platform);
+  set('Device & Browser','Mobile device', n.userAgentData ? yn(n.userAgentData.mobile) : yn(/Mobi|Android/i.test(ua)));
+  set('Device & Browser','CPU cores', n.hardwareConcurrency);
+  set('Device & Browser','Memory (approx.)', n.deviceMemory ? n.deviceMemory+' GB' : '');
+  set('Device & Browser','Touch points', n.maxTouchPoints);
+  set('Device & Browser','Vendor', n.vendor);
+
+  set('Screen','Resolution', `${screen.width} × ${screen.height}`);
+  set('Screen','Window size', `${innerWidth} × ${innerHeight}`);
+  set('Screen','Pixel ratio', devicePixelRatio);
+  set('Screen','Color depth', screen.colorDepth+' bit');
+  set('Screen','Orientation', screen.orientation?.type);
+  set('Screen','Dark mode', yn(matchMedia('(prefers-color-scheme: dark)').matches));
+  set('Screen','Reduced motion', yn(matchMedia('(prefers-reduced-motion: reduce)').matches));
+
+  const tz = Intl.DateTimeFormat().resolvedOptions();
+  set('Language & Time','Language', n.language);
+  set('Language & Time','All languages', (n.languages||[]).join(', '));
+  set('Language & Time','Time zone', tz.timeZone);
+  set('Language & Time','UTC offset', (-new Date().getTimezoneOffset()/60)+' h');
+  set('Language & Time','Local time', new Date().toLocaleString('en-GB'));
+
+  set('Browser settings','Cookies enabled', yn(n.cookieEnabled));
+  set('Browser settings','Do Not Track', n.doNotTrack === '1' ? 'Active' : 'Not active');
+  set('Browser settings','Global Privacy Control', n.globalPrivacyControl ? 'Active' : 'Not active / unknown');
+  set('Browser settings','Online', yn(n.onLine));
+  set('Browser settings','PDF viewer', n.pdfViewerEnabled === undefined ? '' : yn(n.pdfViewerEnabled));
+  set('Browser settings','Automated (WebDriver)', yn(n.webdriver));
+  set('Browser settings','Referrer', document.referrer || 'none');
+  set('Browser settings','Page URL', location.href);
+
+  const c = n.connection || n.mozConnection || n.webkitConnection;
+  if(c){
+    set('Network','Connection type', c.effectiveType);
+    set('Network','Downlink (approx.)', c.downlink ? c.downlink+' Mbit/s' : '');
+    set('Network','Latency (RTT)', c.rtt ? c.rtt+' ms' : '');
+    set('Network','Data saver', yn(c.saveData));
+  }
+
+  try{
+    const gl = document.createElement('canvas').getContext('webgl');
+    const ext = gl && gl.getExtension('WEBGL_debug_renderer_info');
+    if(ext){
+      set('Graphics','GPU vendor', gl.getParameter(ext.UNMASKED_VENDOR_WEBGL));
+      set('Graphics','GPU', gl.getParameter(ext.UNMASKED_RENDERER_WEBGL));
+    } else set('Graphics','WebGL', gl ? 'available (details hidden)' : 'not available');
+  }catch(e){ set('Graphics','WebGL','not available'); }
+}
+
+async function extras(){
+  if(navigator.userAgentData?.getHighEntropyValues){
+    try{
+      const h = await navigator.userAgentData.getHighEntropyValues(['platformVersion','architecture','bitness','model']);
+      set('Device & Browser','OS version', h.platformVersion);
+      set('Device & Browser','Architecture', [h.architecture,h.bitness&&h.bitness+'-bit'].filter(Boolean).join(' '));
+      set('Device & Browser','Model', h.model);
+    }catch(e){}
+  }
+  if(navigator.getBattery){
+    try{
+      const b = await navigator.getBattery();
+      set('Battery','Level', Math.round(b.level*100)+' %');
+      set('Battery','Charging', yn(b.charging));
+    }catch(e){}
+  }
+  if(navigator.storage?.estimate){
+    try{
+      const e = await navigator.storage.estimate();
+      set('Storage','Browser storage used', (e.usage/1048576).toFixed(1)+' MB');
+      set('Storage','Browser storage quota', (e.quota/1073741824).toFixed(1)+' GB');
+    }catch(e){}
+  }
+}
+
+// Free services, no key, CORS enabled: GeoJS (no limits) -> Cloudflare -> ipify (unlimited)
+async function getJSON(url, ms = 6000){
+  const c = new AbortController();
+  const t = setTimeout(() => c.abort(), ms);
+  try{
+    const r = await fetch(url, {signal: c.signal, cache: 'no-store'});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } finally { clearTimeout(t); }
+}
+
+async function ipInfo(){
+  const S = 'IP & Location (approximate)';
+  let info = null;
+
+  try{
+    const d = await getJSON('https://get.geojs.io/v1/ip/geo.json');
+    info = {ip:d.ip, country:d.country, region:d.region, city:d.city, lat:d.latitude, lon:d.longitude,
+            tz:d.timezone, org:d.organization_name, asn:d.asn, src:'GeoJS'};
+  }catch(e){}
+
+  if(!info){
+    try{
+      const d = await getJSON('https://speed.cloudflare.com/meta');
+      info = {ip:d.clientIp, country:d.country, region:d.region, city:d.city, lat:d.latitude, lon:d.longitude,
+              org:d.asOrganization, asn:d.asn, postal:d.postalCode, src:'Cloudflare'};
+    }catch(e){}
+  }
+
+  if(!info){
+    try{
+      const d = await getJSON('https://api64.ipify.org?format=json');
+      info = {ip:d.ip, src:'ipify'};
+    }catch(e){}
+  }
+
+  if(!info){
+    set(S,'IP address','could not be determined (ad blocker, VPN or firewall?)');
+    return;
+  }
+
+  set(S,'IP address', info.ip);
+  set(S,'Country', info.country);
+  set(S,'Region', info.region);
+  set(S,'City', info.city);
+  set(S,'Postal code', info.postal);
+  if(info.lat) set(S,'Coordinates (approx.)', `${info.lat}, ${info.lon}`);
+  set(S,'Provider / Organization', info.org);
+  set(S,'ASN', info.asn);
+  set(S,'Time zone (by IP)', info.tz);
+  set(S,'Data source', info.src);
+
+  getJSON('https://api.ipify.org?format=json', 4000).then(d => set(S,'IPv4', d.ip)).catch(() => set(S,'IPv4','unreachable'));
+  getJSON('https://api6.ipify.org?format=json', 4000).then(d => set(S,'IPv6', d.ip)).catch(() => set(S,'IPv6','not available'));
+
+  try{
+    const txt = await (await fetch('https://one.one.one.one/cdn-cgi/trace', {cache:'no-store'})).text();
+    const t = Object.fromEntries(txt.trim().split('\n').map(l => l.split('=')));
+    set('Connection','HTTP version', t.http);
+    set('Connection','TLS version', t.tls);
+    set('Connection','Cloudflare WARP', yn(t.warp === 'on'));
+    set('Connection','Cloudflare data center', t.colo);
+  }catch(e){}
+}
+
+basics(); extras(); ipInfo();
+</script>
 </body>
 </html>
