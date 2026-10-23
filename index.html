@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Page is currently not available.</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d1117;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+    h1 {
+      position: relative;
+      z-index: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      padding: 0 16px;
+      margin: 0;
+      color: #e6f4ff;
+    }
+
+    h1::after {
+      content: attr(data-text);
+      position: absolute;
+
+      inset: -60px -80px;
+      z-index: -1;
+      padding: 60px 96px;
+      color: transparent;
+      text-shadow:
+        0 0 3px rgba(88, 166, 255, 1),
+        0 0 8px rgba(88, 166, 255, 0.9),
+        0 0 16px rgba(88, 166, 255, 0.7),
+        0 0 28px rgba(88, 166, 255, 0.5);
+
+      -webkit-mask-image: linear-gradient(90deg,
+        transparent 0%, transparent 34%, rgba(0,0,0,.35) 42%, #000 50%, rgba(0,0,0,.35) 58%, transparent 66%, transparent 100%);
+      mask-image: linear-gradient(90deg,
+        transparent 0%, transparent 34%, rgba(0,0,0,.35) 42%, #000 50%, rgba(0,0,0,.35) 58%, transparent 66%, transparent 100%);
+      -webkit-mask-size: 300% 100%;
+      mask-size: 300% 100%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-position: 100% 0;
+      mask-position: 100% 0;
+      animation: edge-sweep 2.8s linear infinite;
+    }
+
+    @keyframes edge-sweep {
+      from { -webkit-mask-position: 90% 0; mask-position: 90% 0; }
+      to   { -webkit-mask-position: 10% 0;  mask-position: 10% 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      h1::after {
+        animation: none;
+        -webkit-mask-image: none;
+        mask-image: none;
+        opacity: 0.6;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 data-text="Page is currently not available.">Page is currently not available.</h1>
+</body>
+</html>
