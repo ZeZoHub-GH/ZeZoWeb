@@ -28,11 +28,12 @@
       margin: 0;
       color: #e6f4ff;
     }
-
+    /* Kopie des Textes hinter der Schrift: nur der Leucht-Rand um die Buchstaben,
+       sichtbar durch eine Maske, die von links nach rechts wandert */
     h1::after {
       content: attr(data-text);
       position: absolute;
-
+      /* Box größer als der Text, damit die Maske den Leuchtrand nicht abschneidet */
       inset: -60px -80px;
       z-index: -1;
       padding: 60px 96px;
@@ -55,7 +56,7 @@
       mask-position: 100% 0;
       animation: edge-sweep 2.8s linear infinite;
     }
-
+    /* Leuchten wandert von links nach rechts */
     @keyframes edge-sweep {
       from { -webkit-mask-position: 90% 0; mask-position: 90% 0; }
       to   { -webkit-mask-position: 10% 0;  mask-position: 10% 0; }
@@ -71,6 +72,6 @@
   </style>
 </head>
 <body>
-  <h1 data-text="Page is currently not available.">This page is currently not available.</h1>
+  <h1 data-text="This page does not exist.">This page does not exist.</h1>
 </body>
 </html>
