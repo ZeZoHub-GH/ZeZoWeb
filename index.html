@@ -12,7 +12,7 @@
             var p = new URLSearchParams(location.search);
             var mode = p.has("getdata") ? "getdata" : (p.get("data") ? "data" : "nf");
             document.documentElement.setAttribute("data-mode", mode);
-            if (mode !== "nf") document.title = "Microbit Relay";
+            if (mode !== "nf") document.title = "Data send!";
         })();
     </script>
 
