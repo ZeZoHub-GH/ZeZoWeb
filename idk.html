@@ -1,0 +1,675 @@
+
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <!-- ==========================================
+         1. GRUNDEINSTELLUNGEN
+    =========================================== -->
+
+    <!-- Zeichensatz festlegen -->
+    <meta charset="UTF-8">
+
+    <!-- Webseite für Smartphones optimieren -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Verhindert, dass Suchmaschinen die Seite indexieren -->
+    <meta name="robots" content="noindex">
+
+    <!-- Titel im Browser-Tab -->
+    <title>ZeZo Hub | Site not found 404</title>
+
+    <!-- ==========================================
+         2. ANZEIGEMODUS BESTIMMEN
+    =========================================== -->
+
+    <script>
+
+        // Sofort ausgeführte Funktion
+        // Entscheidet, welche Ansicht angezeigt werden soll
+        (function () {
+
+            // URL-Parameter auslesen
+            var p = new URLSearchParams(location.search);
+
+
+            // Anzeigemodus bestimmen:
+            // getdata = Micro:bit-Code öffnen
+            // data    = Daten an Webhook senden
+            // nf      = Fehlerseite (404)
+            var mode = p.has("getdata")
+                ? "getdata"
+                : (p.get("data") ? "data" : "nf");
+
+
+            // Anzeigemodus als HTML-Attribut speichern
+            document.documentElement.setAttribute(
+                "data-mode",
+                mode
+            );
+
+
+            // Wenn es keine 404-Seite ist, den Seitentitel ändern
+            if (mode !== "nf") {
+                document.title = "Microbit Relay";
+            }
+
+        })();
+
+    </script>
+
+    <!-- ==========================================
+         3. CSS-DESIGN
+    =========================================== -->
+
+    <style>
+
+
+        /* ------------------------------------------
+           3.1 ANSICHTEN EIN- UND AUSBLENDEN
+        ------------------------------------------- */
+
+
+        /* Bei der 404-Ansicht den Relay-Bereich ausblenden */
+        html[data-mode="nf"] #relay {
+            display: none;
+        }
+
+
+        /* Bei allen anderen Ansichten die 404-Seite ausblenden */
+        html:not([data-mode="nf"]) #nf {
+            display: none;
+        }
+
+
+
+        /* ------------------------------------------
+           3.2 GESTALTUNG DER 404-SEITE
+        ------------------------------------------- */
+
+
+        /* Höhe und Außenabstand der Fehlerseite */
+        html[data-mode="nf"],
+        html[data-mode="nf"] body {
+            height: 100%;
+            margin: 0;
+        }
+
+
+        /* Gesamtes Erscheinungsbild der Fehlerseite */
+        html[data-mode="nf"] body {
+            display: flex;
+
+            /* Inhalt vertikal zentrieren */
+            align-items: center;
+
+            /* Inhalt horizontal zentrieren */
+            justify-content: center;
+
+            /* Dunkler Hintergrund */
+            background: #0d1117;
+
+            /* Schriftart festlegen */
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            /* Text zentrieren */
+            text-align: center;
+
+            /* Scrollen verhindern */
+            overflow: hidden;
+        }
+
+
+
+        /* ------------------------------------------
+           3.3 TEXT DER 404-SEITE
+        ------------------------------------------- */
+
+
+        /* Gestaltung der Überschrift */
+        #nf h1 {
+            position: relative;
+            z-index: 0;
+
+            /* Schriftgröße */
+            font-size: 1.5rem;
+
+            /* Schriftstärke */
+            font-weight: 600;
+
+            /* Innenabstand links und rechts */
+            padding: 0 16px;
+
+            /* Außenabstand entfernen */
+            margin: 0;
+
+            /* Helle Schriftfarbe */
+            color: #e6f4ff;
+        }
+
+
+
+        /* ------------------------------------------
+           3.4 LEUCHTEFFEKT HINTER DEM TEXT
+        ------------------------------------------- */
+
+
+        /* Zusätzliche Textebene für den Leuchteffekt */
+        #nf h1::after {
+
+            /* Text aus dem data-text-Attribut übernehmen */
+            content: attr(data-text);
+
+            /* Position relativ zur Überschrift */
+            position: absolute;
+
+            /* Effektbereich vergrößern */
+            inset: -60px -80px;
+
+            /* Hinter den eigentlichen Text legen */
+            z-index: -1;
+
+            /* Zusätzlichen Innenabstand erzeugen */
+            padding: 60px 96px;
+
+            /* Text selbst transparent machen */
+            color: transparent;
+
+
+            /* Mehrere blaue Leuchtschichten erzeugen */
+            text-shadow:
+                0 0 3px rgba(88, 166, 255, 1),
+                0 0 8px rgba(88, 166, 255, 0.9),
+                0 0 16px rgba(88, 166, 255, 0.7),
+                0 0 28px rgba(88, 166, 255, 0.5);
+
+
+            /* Verlauf als Maske für den Leuchteffekt */
+            -webkit-mask-image: linear-gradient(
+                90deg,
+                transparent 0%,
+                transparent 34%,
+                rgba(0,0,0,.35) 42%,
+                #000 50%,
+                rgba(0,0,0,.35) 58%,
+                transparent 66%,
+                transparent 100%
+            );
+
+            mask-image: linear-gradient(
+                90deg,
+                transparent 0%,
+                transparent 34%,
+                rgba(0,0,0,.35) 42%,
+                #000 50%,
+                rgba(0,0,0,.35) 58%,
+                transparent 66%,
+                transparent 100%
+            );
+
+
+            /* Größe der Maske festlegen */
+            -webkit-mask-size: 300% 100%;
+            mask-size: 300% 100%;
+
+
+            /* Maske nicht wiederholen */
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+
+
+            /* Ausgangsposition der Maske */
+            -webkit-mask-position: 100% 0;
+            mask-position: 100% 0;
+
+
+            /* Animation starten */
+            animation: edge-sweep 2.8s linear infinite;
+        }
+
+
+
+        /* ------------------------------------------
+           3.5 ANIMATION DES LEUCHTEFFEKTES
+        ------------------------------------------- */
+
+
+        /* Der Leuchteffekt bewegt sich von links nach rechts */
+        @keyframes edge-sweep {
+
+            /* Startposition */
+            from {
+                -webkit-mask-position: 90% 0;
+                mask-position: 90% 0;
+            }
+
+            /* Endposition */
+            to {
+                -webkit-mask-position: 10% 0;
+                mask-position: 10% 0;
+            }
+        }
+
+
+
+        /* ------------------------------------------
+           3.6 ANIMATION BEI REDUZIERTER BEWEGUNG
+        ------------------------------------------- */
+
+
+        /* Einstellungen für Nutzer, die reduzierte Animationen bevorzugen */
+        @media (prefers-reduced-motion: reduce) {
+
+            #nf h1::after {
+
+                /* Animation ausschalten */
+                animation: none;
+
+                /* Maske entfernen */
+                -webkit-mask-image: none;
+                mask-image: none;
+
+                /* Leuchteffekt leicht sichtbar lassen */
+                opacity: 0.6;
+            }
+        }
+
+
+
+        /* ------------------------------------------
+           3.7 GESTALTUNG DER MICROBIT-RELAY-SEITE
+        ------------------------------------------- */
+
+
+        /* Design für alle Ansichten außer der 404-Seite */
+        html:not([data-mode="nf"]) body {
+
+            /* Schriftart */
+            font-family: system-ui, sans-serif;
+
+            /* Maximale Seitenbreite */
+            max-width: 32rem;
+
+            /* Seite zentrieren und Abstand oben erzeugen */
+            margin: 3rem auto;
+
+            /* Innenabstand links und rechts */
+            padding: 0 1rem;
+
+            /* Zeilenabstand */
+            line-height: 1.5;
+        }
+
+
+        /* Gestaltung der Code-Anzeigen */
+        #relay code {
+            background: #8882;
+            padding: .1rem .35rem;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+
+
+        /* Gestaltung der Statusmeldung */
+        #status {
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+
+    </style>
+
+</head>
+
+
+
+<body>
+
+
+    <!-- ==========================================
+         4. 404-FEHLERSEITE
+    =========================================== -->
+
+
+    <!-- Wird angezeigt, wenn weder ?data= noch ?getdata vorhanden ist -->
+    <div id="nf">
+
+        <!--
+            data-text enthält denselben Text wie die Überschrift.
+            CSS verwendet ihn für den blauen Leuchteffekt.
+        -->
+        <h1 data-text="Diese Seite existiert nicht.">
+            Diese Seite existiert nicht.
+        </h1>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         5. MICROBIT-RELAY-SEITE
+    =========================================== -->
+
+
+    <!--
+        Wird bei ?data= angezeigt.
+        Bei ?getdata erscheint dieser Bereich nur kurz vor der Weiterleitung.
+    -->
+    <main id="relay">
+
+        <!-- Überschrift -->
+        <h1>Microbit Relay</h1>
+
+
+        <!-- Hier werden die empfangenen Daten angezeigt -->
+        <p>
+            Daten:
+            <code id="data">–</code>
+        </p>
+
+
+        <!-- Hier erscheinen Statusmeldungen -->
+        <p id="status">Warte auf Daten …</p>
+
+    </main>
+
+
+
+    <!-- ==========================================
+         6. JAVASCRIPT
+    =========================================== -->
+
+
+    <script>
+
+
+        // ==================================================
+        // 6.1 WEBHOOK UND GITHUB-EINSTELLUNGEN
+        // ==================================================
+
+
+        // Webhook-Adresse für die Datenübertragung
+        // Beispiel: Discord, Slack, Make oder n8n
+        const WEBHOOK_URL =
+            "https://discord.com/api/webhooks/DEINE_ID/DEIN_TOKEN";
+
+
+        // Name der Micro:bit-Code-Datei auf GitHub
+        const CODE_FILE = "main.ts";
+
+
+        // GitHub-Branch, aus dem die Datei geladen wird
+        const BRANCH = "main";
+
+
+
+        // ==================================================
+        // 6.2 GITHUB-URL AUTOMATISCH ERSTELLEN
+        // ==================================================
+
+
+        // Erstellt die direkte URL zur aktuellen Micro:bit-Datei
+        function rawUrl() {
+
+
+            // GitHub-Benutzernamen aus der Domain auslesen
+            const owner = location.hostname.split(".")[0];
+
+
+            // Ersten Abschnitt des URL-Pfades auslesen
+            const seg = location.pathname
+                .split("/")
+                .filter(Boolean)[0];
+
+
+            // Repository-Namen bestimmen
+            const repo = seg && !seg.endsWith(".html")
+                ? seg
+                : owner + ".github.io";
+
+
+            // Vollständige Raw-GitHub-URL zurückgeben
+            return (
+                "https://raw.githubusercontent.com/"
+                + owner + "/"
+                + repo + "/"
+                + BRANCH + "/"
+                + CODE_FILE
+            );
+
+        }
+
+
+
+        // ==================================================
+        // 6.3 EINSTELLUNGEN UND HTML-ELEMENTE
+        // ==================================================
+
+
+        // Maximale Länge der empfangenen Daten
+        const MAX_LEN = 500;
+
+
+        // HTML-Element für Statusmeldungen auswählen
+        const statusEl = document.getElementById("status");
+
+
+        // HTML-Element für die empfangenen Daten auswählen
+        const dataEl = document.getElementById("data");
+
+
+
+        // ==================================================
+        // 6.4 HAUPTFUNKTION
+        // ==================================================
+
+
+        // Asynchrone Hauptfunktion des Programms
+        async function main() {
+
+
+            // Aktuellen Anzeigemodus auslesen
+            const mode = document.documentElement
+                .getAttribute("data-mode");
+
+
+            // Wenn die 404-Seite angezeigt wird:
+            // Keine weiteren Aktionen ausführen
+            if (mode === "nf") return;
+
+
+
+            // URL-Parameter auslesen
+            const params = new URLSearchParams(location.search);
+
+
+
+            // ----------------------------------------------
+            // 6.4.1 MICROBIT-CODE ÖFFNEN
+            // ----------------------------------------------
+
+
+            // Wenn der Anzeigemodus "getdata" ist
+            if (mode === "getdata") {
+
+                // Statusmeldung anzeigen
+                statusEl.textContent =
+                    "Leite zum aktuellen Micro:bit-Code weiter …";
+
+
+                // Zur aktuellen Code-Datei auf GitHub weiterleiten
+                location.replace(rawUrl());
+
+
+                // Funktion beenden
+                return;
+            }
+
+
+
+            // ----------------------------------------------
+            // 6.4.2 DATEN AUS DER URL AUSLESEN
+            // ----------------------------------------------
+
+
+            // Wert des Parameters "data" auslesen
+            const data = params.get("data");
+
+
+
+            // ----------------------------------------------
+            // 6.4.3 DATENLÄNGE ÜBERPRÜFEN
+            // ----------------------------------------------
+
+
+            // Prüfen, ob die Daten länger als erlaubt sind
+            if (data.length > MAX_LEN) {
+
+                // Fehlermeldung anzeigen
+                statusEl.textContent = "Daten zu lang.";
+
+                // Funktion beenden
+                return;
+            }
+
+
+
+            // ----------------------------------------------
+            // 6.4.4 DATEN ANZEIGEN
+            // ----------------------------------------------
+
+
+            // Daten als normalen Text auf der Webseite anzeigen
+            // textContent führt enthaltenen HTML-Code nicht aus
+            dataEl.textContent = data;
+
+
+
+            // ----------------------------------------------
+            // 6.4.5 DOPPELTE ÜBERTRAGUNG VERHINDERN
+            // ----------------------------------------------
+
+
+            // Eindeutigen Schlüssel für diese Daten erstellen
+            const key = "sent:" + data;
+
+
+            // Prüfen, ob die Daten bereits gesendet wurden
+            if (sessionStorage.getItem(key)) {
+
+                // Hinweis anzeigen
+                statusEl.textContent = "Bereits gesendet.";
+
+                // Funktion beenden
+                return;
+            }
+
+
+
+            // ==================================================
+            // 6.5 DATEN AN DEN WEBHOOK SENDEN
+            // ==================================================
+
+
+            // Versuch starten, die Daten zu übertragen
+            try {
+
+
+                // HTTP-POST-Anfrage an den Webhook senden
+                const res = await fetch(WEBHOOK_URL, {
+
+
+                    // POST überträgt Daten an den Server
+                    method: "POST",
+
+
+                    // JSON als Übertragungsformat festlegen
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+
+                    // Daten in das JSON-Format umwandeln
+                    body: JSON.stringify({
+
+                        // Nachrichtenfeld für Discord
+                        content: "Microbit: " + data,
+
+                        // Textfeld für Slack und Mattermost
+                        text: "Microbit: " + data,
+
+                        // Allgemeines Datenfeld für eigene Webhooks
+                        data: data
+                    })
+
+                });
+
+
+
+                // ----------------------------------------------
+                // 6.5.1 SERVERANTWORT ÜBERPRÜFEN
+                // ----------------------------------------------
+
+
+                // Prüfen, ob die HTTP-Anfrage erfolgreich war
+                if (!res.ok) {
+
+                    // Bei einem Fehler eine Fehlermeldung erzeugen
+                    throw new Error("HTTP " + res.status);
+                }
+
+
+
+                // ----------------------------------------------
+                // 6.5.2 ERFOLGREICHE ÜBERTRAGUNG SPEICHERN
+                // ----------------------------------------------
+
+
+                // Schlüssel im sessionStorage speichern
+                // Verhindert erneutes Senden derselben Daten
+                sessionStorage.setItem(key, "1");
+
+
+                // Erfolgsmeldung anzeigen
+                statusEl.textContent =
+                    "✓ Erfolgreich an Webhook gesendet.";
+
+
+
+            // ==================================================
+            // 6.6 FEHLERBEHANDLUNG
+            // ==================================================
+
+
+            } catch (err) {
+
+                // Fehler abfangen und anzeigen
+                statusEl.textContent =
+                    "Fehler beim Senden: " + err.message;
+
+            }
+
+        }
+
+
+
+        // ==================================================
+        // 7. PROGRAMM STARTEN
+        // ==================================================
+
+
+        // Hauptfunktion ausführen
+        main();
+
+
+    </script>
+
+</body>
+</html>
